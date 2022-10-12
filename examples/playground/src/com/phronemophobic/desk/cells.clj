@@ -1,7 +1,5 @@
 (ns com.phronemophobic.desk.cells
   (:require [membrane.ui :as ui]
-            [membrane.java2d :as backend]
-            ;; [membrane.skia :as backend]
             [clojure.spec.alpha :as s]
             [membrane.component :as component
              :refer [defui defeffect]]
@@ -9,15 +7,19 @@
             [com.phronemophobic.desk :as desk]))
 
 
-(defonce state (atom {:viewers desk/default-viewers}))
+(declare state)
 
 (defn add-viewer! [viewer]
   (swap! state update :viewers desk/add-viewer viewer))
 
-(defn show! []
-  (desk/watch! state)
-  (backend/run (component/make-app #'desk/doc-viewer state)
-    {:window-title (str "Desk - " (ns-name *ns*))}))
+(comment
+  ;; open window
+  (defonce state (desk/show!))
+
+  ;; quit watching this file.
+  (desk/unwatch! state)
+
+  ,)
 
 (defui vertical-block-viewer [{:keys [obj]}]
   (let [viewerf (:viewerf context)]

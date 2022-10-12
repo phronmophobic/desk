@@ -1,38 +1,33 @@
 (ns com.phronemophobic.desk.playground
   (:require [membrane.ui :as ui]
-            [membrane.java2d :as backend]
             [membrane.component :as component
              :refer [defui defeffect]]
             [membrane.basic-components :as basic]
             [com.phronemophobic.desk :as desk]))
 
 ;; This is a markdown block
-;; alsdkjfas
-;; asdfas
+;; with multiple
+;; lines of text
 
-
-(defonce state (atom {:viewers desk/default-viewers}))
+(declare state)
 
 (defn add-viewer! [viewer]
   (swap! state update :viewers desk/add-viewer viewer))
 
+(comment
+  ;; open window
+  (defonce state (desk/show!))
 
-(defn show! []
-  (desk/watch! state)
-  (backend/run (component/make-app #'desk/doc-viewer state)
-    {:window-title (str "Desk - " (ns-name *ns*))}))
+  ;; quit watching this file.
+  (desk/unwatch! state)
+
+  ,)
 
 (defui string-viewer [{:keys [obj]}]
   (ui/label (str obj ": " (count obj))))
 
-(def app (component/make-app #'desk/doc-viewer state))
-
 (def this-is-a "this is a ")
 
-(def string-block (-> @state
-     :doc
-     :blocks
-     (nth 5)))
 
 
 (defui boolean-viewer [{:keys [obj]}]
@@ -41,7 +36,6 @@
 
 true
 
-@state
 
 (comment
   (add-viewer! {:pred boolean?

@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [babashka.fs :as fs]
             [membrane.ui :as ui]
+            [membrane.toolkit :as tk]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
             [membrane.components.code-editor.code-editor :as code-editor]
@@ -318,5 +319,32 @@
            (prn "warning! adding watcher failed.")))))
    ;; return nil
    nil))
+
+(defonce ^:private default-toolkit
+  (delay
+    (if-let [tk (resolve 'membrane.skia/toolkit)]
+      @tk
+      @(requiring-resolve 'membrane.java2d/toolkit))))
+
+(defn show!
+  ([]
+   (let [atm (atom {:viewers default-viewers})]
+     (show! @default-toolkit atm)
+     atm))
+  ([atm]
+   (show! @default-toolkit atm)
+   atm)
+  ([toolkit atm]
+   (watch! atm)
+   (let [window-info
+         (tk/run toolkit (component/make-app #'doc-viewer atm)
+           {:window-title (str "Desk - " (ns-name *ns*))})]
+
+     ;; skia automatically repaints
+     (when-let [repaint (:membrane.java2d/repaint window-info)]
+       (add-watch atm ::repaint (fn [k ref old new]
+                                  (when (not= old new)
+                                    (repaint))))))
+   atm))
 
 
