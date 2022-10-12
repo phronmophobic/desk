@@ -2,6 +2,8 @@
 
 A Desktop viewer for [clerk](https://github.com/nextjournal/clerk).
 
+![Demo gif](/cells.gif?raw=true)
+
 ## Usage
 
 ```clojure
