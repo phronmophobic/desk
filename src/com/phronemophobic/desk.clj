@@ -113,6 +113,25 @@
                                        (code-editor/highlight)
                                        (dissoc :liq.buffer/cursor))}))]))))
 
+(defui error-viewer [{:keys [error]}]
+  (ui/vertical-layout
+   (ui/with-color [1 0 0]
+     (ui/label (str "Exception! " (ex-message error))))
+   #_(viscous/inspector {:obj (viscous/wrap e)
+                         :$obj nil
+                         :extra (get extra [:exception :inspector (:id block)])})
+   (basic/button {:text "tap>"
+                  ;; :hover? (get extra [:hover :tap (:id block)])
+                  :on-click
+                  (fn []
+                    (tap> error)
+                    nil)})
+   (basic/button {:text "print"
+                  :on-click
+                  (fn []
+                    (clojure.pprint/pprint error)
+                    nil)})))
+
 (defui code-viewer [{:keys [viewerf block]}]
   ;; (prn "code viewer " (:id block))
   (let [visibility (:visibility block)]
@@ -129,12 +148,21 @@
             #_(viscous/inspector {:obj (viscous/wrap viewer)
                                   :extra (get block-extra ::inspector)})
             (when-let [render-fn (:render-fn viewer)]
-              (render-fn {:obj obj
-                          :extra block-extra
-                          :$extra $block-extra
-                          :context (assoc context
-                                          :viewerf viewerf)
-                          :$context $context})))))))))
+              (try
+                (ui/try-draw
+                 (render-fn {:obj obj
+                             :extra block-extra
+                             :$extra $block-extra
+                             :context (assoc context
+                                             :viewerf viewerf)
+                             :$context $context})
+                 (fn [draw e]
+                   (draw
+                    (ui/with-color [1 0 0]
+                      (ui/label e)))))
+                (catch Throwable e
+                  (error-viewer {:error e
+                                 :extra (get extra [:error (:id block)])})))))))))))
 
 (defn best-viewer [viewers obj]
   (some (fn [viewer]
