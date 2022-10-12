@@ -6,6 +6,8 @@ A Desktop viewer for [clerk](https://github.com/nextjournal/clerk).
 
 ## Usage
 
+Currently, only available as a git dependency.
+
 ```clojure
 (require '[com.phronemophobic.desk :as desk])
 
