@@ -3,23 +3,16 @@
             [membrane.component :as component
              :refer [defui defeffect]]
             [membrane.basic-components :as basic]
-            [com.phronemophobic.desk :as desk]))
+            [com.phronemophobic.desk :as desk
+             :refer [add-viewer!]]))
 
 ;; This is a markdown block
 ;; with multiple
 ;; lines of text
 
-(declare state)
-
-(defn add-viewer! [viewer]
-  (swap! state update :viewers desk/add-viewer viewer))
-
 (comment
   ;; open window
-  (defonce state (desk/show!))
-
-  ;; quit watching this file.
-  (desk/unwatch! state)
+  (desk/show!)
 
   ,)
 

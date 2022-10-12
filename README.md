@@ -4,7 +4,16 @@ A Desktop viewer for [clerk](https://github.com/nextjournal/clerk).
 
 ## Usage
 
-See [examples](/examples). Run a namespace and then `(show!)`.
+```clojure
+(require '[com.phronemophobic.desk :as desk])
+
+;; open window and start watching file
+;; for local namespace.
+(desk/show!)
+
+```
+
+See [examples](/examples).
 
 ## License
 

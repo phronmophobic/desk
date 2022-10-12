@@ -213,14 +213,7 @@
        )}))
   )
 
-(defn add-viewer [viewers viewer]
-  (if-let [i (some (fn [[i v]]
-                     (when (= (:id viewer)
-                              (:id v))
-                       i))
-                   (map-indexed vector viewers))]
-    (assoc viewers i viewer)
-    (conj viewers viewer)))
+
 
 
 (def default-viewers [{:pred any?
@@ -271,6 +264,23 @@
                           {:ns-or-fname ns-or-fname}))))
 
 
+(defonce ^:private default-toolkit
+  (delay
+    (if-let [tk (resolve 'membrane.skia/toolkit)]
+      @tk
+      @(requiring-resolve 'membrane.java2d/toolkit))))
+
+(defonce default-states (atom {}))
+
+(defn get-default-state []
+  (get
+   (swap! default-states
+          (fn [m]
+            (if (contains? m *ns*)
+              m
+              (assoc m *ns* (atom {:viewers default-viewers})))))
+   *ns*))
+
 (defn ^:private watch-callback
   [atm {:keys [type path] :as file-event}]
   (when (contains? #{:modify :create} type)
@@ -284,15 +294,16 @@
                assoc
                :doc doc))
       (catch Exception e
-        (prn e))))
-  )
+        (prn e)))))
 
-(defn unwatch! [atm]
-  ;; remove old
-  (let [[{old-watcher :watcher} _new-state] (swap-vals! atm dissoc :watcher)]
-    (when old-watcher
-      (beholder/stop @old-watcher)))
-  )
+(defn unwatch!
+  ([]
+   (unwatch! (get-default-state)))
+  ([atm]
+   ;; remove old
+   (let [[{old-watcher :watcher} _new-state] (swap-vals! atm dissoc :watcher)]
+     (when old-watcher
+       (beholder/stop @old-watcher)))))
 
 (defn watch!
   ([atm]
@@ -320,15 +331,26 @@
    ;; return nil
    nil))
 
-(defonce ^:private default-toolkit
-  (delay
-    (if-let [tk (resolve 'membrane.skia/toolkit)]
-      @tk
-      @(requiring-resolve 'membrane.java2d/toolkit))))
+(defn add-viewer [viewers viewer]
+  (if-let [i (some (fn [[i v]]
+                     (when (= (:id viewer)
+                              (:id v))
+                       i))
+                   (map-indexed vector viewers))]
+    (assoc viewers i viewer)
+    (conj viewers viewer)))
+
+
+
+(defn add-viewer!
+  ([viewer]
+   (add-viewer! (get-default-state) viewer))
+  ([atm viewer]
+   (swap! atm update :viewers add-viewer viewer)))
 
 (defn show!
   ([]
-   (let [atm (atom {:viewers default-viewers})]
+   (let [atm (get-default-state)]
      (show! @default-toolkit atm)
      atm))
   ([atm]
