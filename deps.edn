@@ -1,10 +1,9 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.11.1"}
-        ;; com.phronemophobic/spreadsheet {:local/root "../spreadsheet"}
-        com.phronemophobic/membrane {:local/root "../membrane2"}
         io.github.nextjournal/clerk {:mvn/version "0.10.562"}
-        io.github.phronmophobic/viscous {:local/root "../viscous"}
         mogenslund/liquid {:mvn/version "2.1.2"}
+        com.phronemophobic/membrane {:mvn/version "0.10.3-beta"}
+        com.phronemophobic/viscous {:mvn/version "1.3.2"}
 
         ,}
  

@@ -1,6 +1,6 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}
-        com.phronemophobic/membrane {:mvn/version "0.10.2-beta"}
+        com.phronemophobic/membrane {:mvn/version "0.10.3-beta"}
         com.phronemophobic/desk {:local/root "../../"}
         com.phronemophobic.membrane/skialib-macosx-aarch64 {:mvn/version "0.9.31.0-beta"}
         com.phronemophobic.membrane/skialib-macosx-x86-64 {:mvn/version "0.9.31.0-beta"}
